@@ -62,6 +62,8 @@ public class RuleEngine extends ContextAwareSupport {
     Logger logger = (Logger) getX().get("logger");
     for (Rule rule : rules) {
       try {
+        logger.debug("sync checking", rule.getId(), rule.getName(), obj.getClassInfo().getId(), obj.getProperty("id"));
+
         if ( stops_.get() ) break;
         if ( ! isRuleActive(rule, rule.getAction()) ) continue;
         if ( ! checkPermission(rule, obj) ) continue;
@@ -207,6 +209,8 @@ public class RuleEngine extends ContextAwareSupport {
       Logger logger = (Logger) x.get("logger");
       for (Rule rule : rules) {
         if ( stops_.get() ) return;
+
+        logger.debug("async checking", rule.getId(), rule.getName(), obj.getClassInfo().getId(), obj.getProperty("id"));
 
         if ( isRuleActive(rule, rule.getAsyncAction())
           && checkPermission(rule, obj)
