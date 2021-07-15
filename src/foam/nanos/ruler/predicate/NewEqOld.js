@@ -37,7 +37,7 @@ foam.CLASS({
           return nu == null;
         }
 
-        X x = (X) obj;
+        foam.core.X x = (foam.core.X) obj;
         ((foam.nanos.logger.Logger) x.get("logger")).info("nu", nu, "old", old);
 
         // clear ignored properties on NEW and OLD objects before comparing
