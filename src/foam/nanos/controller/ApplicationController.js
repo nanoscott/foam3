@@ -51,6 +51,7 @@ foam.CLASS({
     'foam.u2.crunch.CrunchController',
     'foam.u2.borders.MarginBorder',
     'foam.u2.stack.Stack',
+    'foam.u2.stack.StackBlock',
     'foam.u2.stack.DesktopStackView',
     'foam.u2.dialog.NotificationMessage',
     'foam.nanos.session.SessionTimer',
@@ -394,9 +395,12 @@ foam.CLASS({
         self.installLanguage();
 
         // TODO Interim solution to pushing unauthenticated menu while applicationcontroller refactor is still WIP
-        if ( self.memento.value ) {
-          var menu = await self.__subContext__.menuDAO.find(self.memento.value);
-          if ( menu ) {
+        if ( self.memento.head ) {
+          var menu = await self.__subContext__.menuDAO.find(self.memento.head);
+          // explicitly check that the menu is unauthenticated
+          // since if there is a user session on refresh, this would also
+          // find authenticated menus to try to push before fetching subject
+          if ( menu && menu.authenticate === false ) {
             self.pushMenu(menu);
             await self.maybeReinstallLanguage(client);
             self.languageInstalled.resolve();
@@ -447,7 +451,7 @@ foam.CLASS({
       }));
     },
 
-    function initE() {
+    function render() {
       window.addEventListener('resize', this.updateDisplayWidth);
       this.updateDisplayWidth();
 
@@ -504,7 +508,7 @@ foam.CLASS({
       var map = this.__subContext__.translationService.localeEntries;
       for ( var key in map ) {
         try {
-          var node = global;
+          var node = globalThis;
           var path = key.split('.');
 
           for ( var i = 0 ; node && i < path.length-1 ; i++ ) node = node[path[i]];
@@ -601,7 +605,7 @@ foam.CLASS({
     function wrapCSS(text, id) {
       /** CSS preprocessor, works on classes instantiated in subContext. */
       if ( text ) {
-        var eid = foam.u2.Element.NEXT_ID();
+        var eid = 'style' + (new Object()).$UID;
         this.styles[eid] = text;
 
         for ( var i = 0 ; i < this.MACROS.length ; i++ ) {
@@ -641,16 +645,16 @@ foam.CLASS({
       // don't go to log in screen if going to reset password screen
       if ( location.hash && location.hash === '#reset' ) {
         return new Promise(function(resolve, reject) {
-          self.stack.push({
+          self.stack.push(self.StackBlock.create({ view: {
             class: 'foam.nanos.auth.ChangePasswordView',
             modelOf: 'foam.nanos.auth.ResetPassword'
-           });
+           }}));
           self.loginSuccess$.sub(resolve);
         });
       }
 
       return new Promise(function(resolve, reject) {
-        self.stack.push({ class: 'foam.u2.view.LoginView', mode_: 'SignIn' }, self);
+        self.stack.push(self.StackBlock.create({ view: { class: 'foam.u2.view.LoginView', mode_: 'SignIn' }, parent: self }));
         self.loginSuccess$.sub(resolve);
       });
     },

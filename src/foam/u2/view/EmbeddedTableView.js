@@ -14,6 +14,7 @@ foam.CLASS({
     'foam.comics.v2.DAOBrowseControllerView',
     'foam.comics.v2.DAOControllerConfig',
     'foam.u2.borders.CardBorder',
+    'foam.u2.stack.StackBlock',
     'foam.u2.view.ScrollTableView'
   ],
 
@@ -57,8 +58,8 @@ foam.CLASS({
     }
   ],
   methods: [
-    async function initE() {
-      this.initMemento();
+    async function render() {
+      this.currentMemento_ = this.memento;
       if ( this.memento && this.memento.head == `&${this.data.of.name}` ) {
         this.openFullTable();
       } else {
@@ -82,12 +83,12 @@ foam.CLASS({
     },
     function openFullTable() {
       this.memento.head = `&${this.data.of.name}`;
-      var navStackTitle = foam.String.pluralize(foam.String.labelize(this.data.of.name));
-      this.stack.push({
-        class: this.DAOBrowseControllerView,
-        data$: this.data$,
-        config$: this.config$
-      }, this, undefined, { navStackTitle: navStackTitle, mementoHead: `&${this.data.of.name}` });
+      this.stack.push(this.StackBlock.create({
+        view: {
+          class: this.DAOBrowseControllerView,
+          data$: this.data$,
+          config$: this.config$
+        }, parent: this }));
     }
   ],
   actions: [
