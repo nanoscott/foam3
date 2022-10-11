@@ -266,6 +266,21 @@ foam.INTERFACE({
       ],
     },
     {
+      name: 'getVisibleCapabilities',
+      async: true,
+      type: 'ArraySink',
+      args: [
+        {
+          name: 'x',
+          type: 'Context'
+        },
+        {
+          name: 'hostname',
+          type: 'String'
+        }
+      ],
+    },
+    {
       name: 'updateUserJunction',
       async: true,
       type: 'UserCapabilityJunction',

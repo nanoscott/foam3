@@ -4,7 +4,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-foam.CLASS({
+ foam.CLASS({
   class: 'foam.core.Model',
 
   package: 'foam.u2.crunch',
@@ -56,7 +56,6 @@ foam.CLASS({
   requires: [
     'foam.dao.ArrayDAO',
     'foam.dao.NullDAO',
-    'foam.dao.PromisedDAO',
     'foam.nanos.crunch.Capability',
     'foam.nanos.crunch.CapabilityCategory',
     'foam.nanos.crunch.CapabilityCategoryCapabilityJunction',
@@ -178,35 +177,7 @@ foam.CLASS({
         DAO with only visible capabilities.
       `,
       factory: function() {
-        var self = this;
-        return this.PromisedDAO.create({
-          promise: new Promise(async function(resolve) {
-              var themeCaps =  await self.themeDomainDAO.find(self.window.location.hostname).then(function(ret) {
-                return ret?.getCapabilities(self.ctrl.__subContext__).dao.select();
-              });
-              if ( themeCaps?.array?.length != 0 ) return themeCaps.array;
-              var featured = await self.featuredCapabilities.select();
-              return featured.array;
-          })
-        });
-      }
-    },
-    {
-      name: 'featuredCapabilities',
-      class: 'foam.dao.DAOProperty',
-      documentation: `
-        DAO Property to find capabilities to feature.
-      `,
-      expression: function(visibleCapabilityDAO) {
-        return visibleCapabilityDAO
-          .where(this.IN('featured', this.Capability.KEYWORDS));
-      }
-    },
-    {
-      name: 'themeDomain',
-      expression: function(themeDomainDAO, window) {
-        return themeDomainDAO
-          .find(this.window.location.hostname);
+        return this.NullDAO.create();
       }
     },
     {
@@ -220,18 +191,6 @@ foam.CLASS({
           .where(this.EQ(this.CapabilityCategory.VISIBLE, true));
       }
     },
-    // {
-    //   name: 'visibleCapabilities',
-    //   factory: function() {
-    //     // factories need to be synchronous!
-    //     var themeCaps = await this.themeDomainDAO.find(this.window.location.hostname).then(function(ret) {
-    //       return ret?.getCapabilities(this.ctrl.__subContext__).dao.select();
-    //     });
-    //     if ( themeCaps?.array?.length != 0 ) return themeCaps.array;
-    //     var featured = await this.featuredCapabilities.select();
-    //     return featured.array;
-    //   }
-    // },
     {
       name: 'carouselCounter',
       class: 'Int',
@@ -270,18 +229,6 @@ foam.CLASS({
         });
       });
     },
-    
-    /**
-     * Fetch capabilities intended to be rendered on the view.
-     */
-    async function getCapabilities() {
-      var themeCaps =  await this.themeDomainDAO.find(this.window.location.hostname).then(function(ret) {
-        return ret?.getCapabilities(this.ctrl.__subContext__).dao.select();
-      });
-      if ( themeCaps?.array?.length != 0 ) return themeCaps.array;
-      var featured = await this.featuredCapabilities.select();
-      return featured.array;
-    },
 
     function render() {
       this.SUPER();
@@ -297,8 +244,9 @@ foam.CLASS({
         .start('p').addClass(this.myClass('label-subtitle'))
           .add(this.SUBTITLE.replace('{appName}', this.theme.appName))
         .end()
-        .add(this.slot(async function(junctions, featuredCapabilities, themeDomain) {
-          return self.renderFeatured(this.visibleCapabilityDAO.select());
+        .add(this.slot(async function(junctions) {
+          var caps = await self.crunchService.getVisibleCapabilities(this.ctrl.__subContext__, this.window.location.hostname);
+          return self.renderFeatured(caps);
         }))
         // NOTE: TEMPORARILY REMOVED
         // .add(self.accountAndAccountingCard())
@@ -490,7 +438,7 @@ foam.CLASS({
     },
     function daoUpdate() {
       Promise.resolve()
-        .then(() => this.getCapabilities())
+        .then(() => this.crunchService.getVisibleCapabilities(this.ctrl.__subContext__, this.window.location.hostname))
         .then(async capabilties => {
           if ( capabilties.length !== 1 ) return;
 

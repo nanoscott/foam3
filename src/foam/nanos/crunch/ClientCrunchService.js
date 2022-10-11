@@ -14,13 +14,16 @@ foam.CLASS({
   ],
 
   requires: [
+    'foam.dao.ArraySink',
+    'foam.nanos.crunch.Capability',
     'foam.nanos.crunch.CapabilityJunctionStatus'
   ],
 
   imports: [
     'crunchService',
     'subject',
-    'userCapabilityJunctionDAO'
+    'userCapabilityJunctionDAO',
+    'themeDomainDAO'
   ],
 
 
@@ -51,6 +54,18 @@ foam.CLASS({
         
         ucj.lastUpdatedRealUser = this.subject.realUser.id;
         return await this.userCapabilityJunctionDAO.put(ucj);
+      }
+    },
+    {
+      name: 'getVisibleCapabilities',
+      code: async function (x, hostname) {
+        var themeCaps =  await this.themeDomainDAO.find(hostname).then(function(ret) {
+          return ret?.getCapabilities(x).dao.select();
+        });
+        if ( themeCaps?.array?.length != 0 ) return themeCaps.array;
+        var featureArraySink = await this.crunchService.getEntryCapabilities();
+        var featured = await featureArraySink.where(this.IN('featured', this.Capability.KEYWORDS)).select();
+        return featured.array;
       }
     }
   ]

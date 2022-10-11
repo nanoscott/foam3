@@ -27,6 +27,7 @@ import foam.nanos.logger.Logger;
 import foam.nanos.NanoService;
 import foam.nanos.pm.PM;
 import foam.nanos.session.Session;
+import foam.nanos.theme.ThemeDomain;
 import foam.util.Auth;
 import java.lang.Exception;
 import java.util.*;
@@ -334,6 +335,16 @@ public class ServerCrunchService
     }
 
     return true;
+  }
+
+  // see documentation in CrunchService interface
+  public ArraySink getVisibleCapabilities(X x, String s) {
+    var themeDomain = (ThemeDomain)((DAO)x.get("themeDomainDAO")).find(s);
+    if (themeDomain != null) {
+      return (ArraySink)themeDomain.getCapabilities(x).getDAO().select(new ArraySink());
+    }
+
+    return this.getEntryCapabilities(x);
   }
 
   // see documentation in CrunchService interface
