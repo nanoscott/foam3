@@ -66,7 +66,7 @@ foam.CLASS({
           this.analyticsAgent.pub('event', {
             name: 'CONSOLE_' + method.toUpperCase(),
             extra: foam.json.stringify(a),
-            stream: 'log'
+            stream: 'LOG'
           });
         };
       }

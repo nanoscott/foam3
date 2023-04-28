@@ -66,7 +66,9 @@ foam.CLASS({
     },
     {
       class: 'String',
-      name: 'stream'
+      name: 'stream',
+      value: 'dao',
+      hidden: true
     }
   ],
 

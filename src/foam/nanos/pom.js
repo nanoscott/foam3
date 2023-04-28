@@ -539,6 +539,7 @@ foam.POM({
     { name: "analytics/AnalyticEvent",                                                    flags: "js|java" },
     { name: "analytics/AnalyticEventTimestampDAO",                                        flags: "js|java" },
     { name: "analytics/AnalyticEventOMDAO",                                               flags: "js|java" },
+    { name: "analytics/AnalyticEventLoggerDAO",                                               flags: "js|java" },
     { name: "analytics/Analyticable",                                                    flags: "js|java" },
     { name: "analytics/ruler/LogAnalyticEventRuleAction",                                 flags: "js|java" },
     { name: "analytics/Candlestick",                                                      flags: "js|java" },
