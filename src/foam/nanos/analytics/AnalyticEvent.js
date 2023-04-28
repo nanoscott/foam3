@@ -63,6 +63,10 @@ foam.CLASS({
     {
       class: 'String',
       name: 'extra'
+    },
+    {
+      class: 'String',
+      name: 'stream'
     }
   ],
 

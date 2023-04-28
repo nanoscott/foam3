@@ -65,7 +65,8 @@ foam.CLASS({
 
           this.analyticsAgent.pub('event', {
             name: 'CONSOLE_' + method.toUpperCase(),
-            extra: foam.json.stringify(a)
+            extra: foam.json.stringify(a),
+            stream: 'log'
           });
         };
       }
@@ -92,6 +93,10 @@ foam.CLASS({
       var traceId = this.traceIDKey$get(this.__subContext__);
       var objectId = this.objectIDKey$get(this.__subContext__);
       var sessionId = this.sessionID;
+      
+      if ( !evt.stream ) {
+        evt.stream = 'dao';
+      }
 
       // TODO: add subclass support
       var analyticEvent = this.AnalyticEvent.create({...evt, traceId, objectId, sessionId});
