@@ -65,9 +65,17 @@ foam.CLASS({
       name: 'extra'
     },
     {
-      class: 'String',
+      class: 'Enum',
       name: 'stream',
-      value: 'dao',
+      of: 'foam.nanos.analytics.AnalyticEventStream',
+      value: 'ALL',
+      hidden: true
+    },
+    {
+      class: 'Enum',
+      name: 'logLevel',
+      of: 'foam.log.LogLevel',
+      value: 'INFO',
       hidden: true
     }
   ],

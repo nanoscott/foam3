@@ -12,8 +12,11 @@ foam.CLASS({
   documentation: 'Create log message event',
 
   javaImports: [
+    'foam.core.X',
+    'foam.core.PropertyInfo',
     'foam.nanos.logger.Loggers',
-    'foam.core.PropertyInfo'
+    'foam.log.LogLevel',
+    'foam.util.SafetyUtil'
   ],
 
   methods: [
@@ -23,14 +26,42 @@ foam.CLASS({
         var evt = (AnalyticEvent) obj;
 
         // Log all events
+        log(x, formatEvent(evt), evt.getLogLevel());
         Loggers.logger(x, this).log(formatEvent(evt));
 
         // Stop processing if this is just a log stream event
-        if ( "LOG".equalsIgnoreCase(evt.getStream()) ) {
+        if ( evt.getStream() == AnalyticEventStream.LOG ) {
           return evt;  
         } 
         
         return getDelegate().put_(x, obj);
+      `
+    },
+    {
+      name: 'log',
+      args: 'X x, String message, LogLevel logLevel',
+      javaCode: `
+        if ( SafetyUtil.isEmpty(message) )
+          return;
+
+        var logger = Loggers.logger(x, this);
+        switch ( logLevel ) {
+          case DEBUG:
+            logger.debug(message);
+            break;
+
+          case INFO:
+            logger.info(message);
+            break;
+
+          case WARN:
+            logger.warning(message);
+            break;
+
+          case ERROR:
+            logger.error(message);
+            break;
+        }
       `
     },
     {
@@ -53,11 +84,11 @@ foam.CLASS({
         };
 
         StringBuffer sb = new StringBuffer();
-        for ( var prop in properties ) {
+        for ( var prop : properties ) {
           if ( !prop.isSet(evt) )
             continue;
 
-          if ( sb.getLength() > 0 )
+          if ( sb.length() > 0 )
             sb.append(", ");
 
           sb.append(prop.getName())
@@ -66,13 +97,13 @@ foam.CLASS({
         }
 
         // Add any tags
-        if ( evt.getTags() != null ) {
+        if ( evt.getTags() != null && evt.getTags().length > 0 ) {
           sb.append(", ")
             .append(AnalyticEvent.TAGS.getName())
             .append(":");
 
           boolean doneFirst = false;
-          for ( var tag in evt.getTags() ) {
+          for ( var tag : evt.getTags() ) {
             if ( doneFirst )
               sb.append(",");
 
