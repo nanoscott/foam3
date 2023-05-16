@@ -49,8 +49,6 @@ foam.CLASS({
             var nu = (UserCapabilityJunction) obj;
             var auth = (AuthService) x.get("auth");
 
-            logger.debug(className, "start", nu);
-
             if ( nu.getStatus() == AVAILABLE ||
               nu.getStatus() == ACTION_REQUIRED
             ) {
