@@ -33,7 +33,7 @@ foam.CLASS({
             UserCapabilityJunction ucj = (UserCapabilityJunction) obj;
 
             Logger logger = (Logger) x.get("logger");
-            logger.debug("SetUCJStatusOnPut", "start", ucj);
+            // logger.debug("SetUCJStatusOnPut", "start", ucj);
 
             try {
               // other relevant possibilities for ucj statuses are EXPIRED, ACTION_REQUIRED.
@@ -70,7 +70,7 @@ foam.CLASS({
                 ucj.setStatus(wasApproved ? CapabilityJunctionStatus.GRANTED : CapabilityJunctionStatus.PENDING);
               }
             } finally {
-              logger.debug("SetUCJStatusOnPut", "end", ucj);
+              // logger.debug("SetUCJStatusOnPut", "end", ucj);
             }
           }
         }, "set ucj status on put");

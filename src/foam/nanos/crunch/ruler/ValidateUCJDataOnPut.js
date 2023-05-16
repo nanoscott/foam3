@@ -37,7 +37,7 @@ foam.CLASS({
             UserCapabilityJunction ucj = (UserCapabilityJunction) obj;
 
             Logger logger = (Logger) x.get("logger");
-            logger.debug("ValidateUCJDataOnPut", "start", ucj);
+            // logger.debug("ValidateUCJDataOnPut", "start", ucj);
 
             try {
               boolean isRenewable = ucj.getIsRenewable(); // ucj either expired, in grace period, or in renewal period
@@ -74,7 +74,7 @@ foam.CLASS({
                 }
               }
             } finally {
-              logger.debug("ValidateUCJDataOnPut", "end", ucj);
+              // logger.debug("ValidateUCJDataOnPut", "end", ucj);
             }
           }
         }, "validate ucj data on put");
