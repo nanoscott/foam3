@@ -52,13 +52,15 @@ foam.CLASS({
     }
 
     ^bodyWrapper {
-      display: flex;
       flex-direction: column;
       flex: 1;
       padding: 0 4rem;
       align-self: center;
       width: 100%;
       overflow: auto;
+    }
+    ^bodyWrapper:not(^removeFlex)  {
+      display: flex;
     }
     ^actionBar {
       padding: 2.4rem;
@@ -72,6 +74,11 @@ foam.CLASS({
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       padding: 12px;
+    }
+    @media only screen and (max-width: 767px) {
+      ^header {
+        padding: 6px;
+      }
     }
     ^header.showBorder {
       border-bottom: 1px solid $grey300;
@@ -134,6 +141,11 @@ foam.CLASS({
       flex-shrink: 0;
       white-space: nowrap;
     }
+    @media only screen and (max-width: 767px) {
+      ^footer {
+        padding: 0.3em 1em;
+      }
+    }
     ^footer-right, ^footer-left {
       display: flex;
       align-items: center;
@@ -158,11 +170,17 @@ foam.CLASS({
       text-align: center;
       transition: all 150ms;
     }
-
     ^inner-title-small {
       padding: 1.2rem 0;
     }
-
+    @media only screen and (max-width: 767px) {
+      ^inner-title, ^inner-title-small {
+        font-size: 1.6rem;
+        line-height: 1.25;
+        padding: 1.2rem 0;
+        transition: none;
+      }
+    }
     ^footer.p-legal-light {
       color: #6F6F6F;
     }
@@ -369,6 +387,7 @@ foam.CLASS({
           }))
           .start()
             .addClass(this.myClass('bodyWrapper'))
+            .enableClass(this.myClass('removeFlex'), this.forceFullHeightBody$)
             .add(this.slot(function(content$childNodes) {
               if ( ! content$childNodes ) return;
               this.forceFullHeightBody = false;
@@ -387,7 +406,7 @@ foam.CLASS({
                 .show(titleSlot)
                 .add(titleSlot);
             }))
-            .start(this.ScrollBorder, { topShadow$: this.isScrolled$ })
+            .start(this.ScrollBorder, { topShadow$: this.isScrolled$, disableScroll$: this.forceFullHeightBody$ })
               .addClass(this.myClass('body'))
               .enableClass(this.myClass('fullHeightBody'), this.forceFullHeightBody$.or(this.fullscreen$.or(this.forceFullscreen$).not()))
               .call(function() { content = this.content; })

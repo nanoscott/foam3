@@ -25,11 +25,13 @@ import java.util.Arrays;
  */
 public class MLang
 {
-  public static final Predicate TRUE  = new True();
-  public static final Predicate FALSE = new False();
+  public static final Predicate TRUE    = new True();
+  public static final Predicate FALSE   = new False();
 
-  public static final Expr NEW_OBJ    = new ContextObject("NEW");
-  public static final Expr OLD_OBJ    = new ContextObject("OLD");
+  public static final Expr      NOW     = new CurrentTime();
+
+  public static final Expr      NEW_OBJ = new ContextObject("NEW");
+  public static final Expr      OLD_OBJ = new ContextObject("OLD");
 
   public static Comparator DESC(Comparator c) {
     return new Desc(c);
@@ -287,6 +289,12 @@ public class MLang
 
   public static Expr MAX_FUNC(Object arg1, Object arg2) {
     return prepareFormula(new MaxFunc(), arg1, arg2);
+  }
+
+  public static Expr YEARS(Object o) {
+    var y = new Years();
+    y.setArg1(MLang.prepare(o));
+    return y;
   }
 
   public static Expr prepareFormula(Formula formula, Object... args) {
